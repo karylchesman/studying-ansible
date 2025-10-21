@@ -1,0 +1,47 @@
+services:
+  app1:
+    build:
+      context: ./images/nginx
+      dockerfile: Dockerfile
+    volumes:
+      - ./nodes/app1/app1.conf:/etc/nginx/sites-enabled/default:ro
+    ports:
+      - "80:80"
+      - "2222:22"
+    networks:
+      ansible_net:
+        ipv4_address: 172.30.0.10
+    restart: always
+  app2:
+    build:
+      context: ./images/nginx
+      dockerfile: Dockerfile
+    volumes:
+      - ./nodes/app2/app2.conf:/etc/nginx/sites-enabled/default:ro
+    ports:
+      - "81:80"
+      - "2223:22"
+    networks:
+      ansible_net:
+        ipv4_address: 172.30.0.11
+    restart: always
+
+  ansible-controller:
+    image: alpine/ansible:latest
+    container_name: ansible-controller
+    command: tail -f /dev/null # Mantém o container rodando
+    networks:
+      ansible_net:
+        ipv4_address: 172.30.0.20
+    volumes:
+      - ./nodes/controller:/ansible # Pasta local com playbooks e inventory
+    working_dir: /ansible
+    tty: true
+    stdin_open: true
+
+networks:
+  ansible_net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.30.0.0/16

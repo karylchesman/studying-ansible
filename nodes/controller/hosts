@@ -1,0 +1,13 @@
+[srv1]
+172.30.0.10
+
+[srv2]
+172.30.0.11
+
+[all_servers:children]
+srv1
+srv2
+
+[all_servers:vars]
+ansible_ssh_private_key_file=./id_rsa
+ansible_user=ansible
