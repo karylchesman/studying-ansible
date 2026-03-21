@@ -1,0 +1,2 @@
+node1 ansible_user=node1
+node2 ansible_user=node2

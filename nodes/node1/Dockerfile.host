@@ -1,0 +1,32 @@
+FROM ubuntu:22.04
+
+ARG ARG_NODE_LABEL="node1"
+ENV NODE_ID=${ARG_NODE_LABEL}
+
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+  --mount=type=cache,target=/var/lib/apt,sharing=locked \
+  apt update && \
+  apt install -y openssh-server sudo python3
+
+RUN useradd -m -s /bin/bash ${NODE_ID} && \
+  usermod -aG sudo ${NODE_ID} && \
+  echo "${NODE_ID} ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/${NODE_ID} && \
+  chmod 440 /etc/sudoers.d/${NODE_ID}
+
+RUN mkdir /var/run/sshd && \
+  mkdir -p /home/${NODE_ID}/.ssh && \
+  chmod 700 /home/${NODE_ID}/.ssh
+
+RUN echo "alias python='/usr/bin/python3'" >> /home/${NODE_ID}/.bashrc
+
+COPY id_rsa.pub /home/${NODE_ID}/.ssh/authorized_keys
+RUN chmod 600 /home/${NODE_ID}/.ssh/authorized_keys && \
+  chown -R ${NODE_ID}:${NODE_ID} /home/${NODE_ID}/.ssh
+
+# Reset root password
+RUN echo "${NODE_ID}:root" | chpasswd
+
+EXPOSE 22
+
+# command to start the SSH service and keep the container running
+CMD ["/usr/sbin/sshd", "-D"]
