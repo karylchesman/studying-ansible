@@ -1,0 +1,5 @@
+- name: Install Nginx on remote servers
+  hosts: all
+  become: true
+  roles:
+    - install_nginx
