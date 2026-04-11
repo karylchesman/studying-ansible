@@ -1,8 +1,12 @@
-[all]
-50.17.37.95
-3.92.70.94
+[managers]
+18.206.218.179
+
+[workers]
+3.87.168.153
+100.30.185.62
 
 [all:vars]
 ansible_ssh_private_key_file=~/.ssh/ansible-test-server.pem
 ansible_user=ubuntu
 host_key_checking=False
+ansible_python_interpreter=/usr/bin/python3

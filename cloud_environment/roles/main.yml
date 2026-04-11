@@ -1,6 +1,18 @@
-- name: Install Nginx on remote servers
-  hosts: all
+# - name: Setup cloud servers
+#   hosts: all
+#   become: true
+#   roles:
+#     - install_nginx
+#     - install_docker
+
+- name: Managers
+  hosts: managers
   become: true
   roles:
-    - install_nginx
-    - install_docker
+    - docker_swarm_manager
+
+- name: Workers
+  hosts: workers
+  become: true
+  roles:
+    - docker_swarm_worker

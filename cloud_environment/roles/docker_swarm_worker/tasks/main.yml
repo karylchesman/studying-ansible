@@ -1,0 +1,19 @@
+---
+# tasks file for docker_swarm_worker
+
+- name: Ensure Python and Docker SDK for Python are installed
+  become: true
+  ansible.builtin.apt:
+    name:
+      - python3
+      - python3-docker
+    state: present
+    update_cache: true
+
+- name: Join Docker Swarm as a worker
+  become: true
+  community.docker.docker_swarm:
+    state: join
+    advertise_addr: "{{ ansible_default_ipv4.address }}"
+    join_token: "{{ hostvars[groups['managers'][0]].docker_swarm_manager_join_token_worker }}"
+    remote_addrs: "{{ hostvars[groups['managers'][0]]['ansible_default_ipv4']['address'] }}"

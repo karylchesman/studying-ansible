@@ -1,0 +1,21 @@
+---
+# tasks file for docker_swarm_manager
+
+- name: Ensure Python and Docker SDK for Python are installed
+  become: true
+  ansible.builtin.apt:
+    name:
+      - python3
+      - python3-docker
+    state: present
+    update_cache: true
+
+- name: Initialize Docker Swarm
+  become: true
+  community.docker.docker_swarm:
+    state: present
+  register: docker_swarm_manager_init_swarm
+
+- name: Get Swarm join token for workers
+  ansible.builtin.set_fact:
+    docker_swarm_manager_join_token_worker: "{{ docker_swarm_manager_init_swarm.swarm_facts.JoinTokens.Worker }}"
